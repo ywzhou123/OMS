@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+{% load pagination_tags %}
+{% block title %}<title>OMS｜资产管理｜文件管理</title>{% endblock %}
+{% block nav_left_id %}"salt_file"{% endblock %}
+{% block main %}
+    <ol class="breadcrumb">
+        <li><a href="{% url 'app:index' %}">首页</a></li>
+        <li><a href="#">运维操作</a></li>
+        <li class="active">文件管理</li>
+    </ol>
+    <h2>
+        文件管理
+        <span class="pull-right">
+            <a class="btn btn-info" href="" title="详细信息"  data-toggle="modal" data-target="#myModal">文件上传</a>
+        </span>
+    </h2>
+    {% if msg %}
+        {% if ok == 'yes' %}
+            <div class="alert alert-success">
+        {% else %}
+            <div class="alert alert-warning">
+        {% endif %}
+                <a href="#" class="close" data-dismiss="alert">&times;</a>
+                {{ msg }}
+            </div>
+    {% endif %}
+
+
+    <div class="row">
+        <div class="col-sm-4 col-md-3"  >
+            <form role="form" method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <select class="form-control" name="idc" id="idc" >
+                        <option value="">————选择机房————</option>
+                        {% for idc in idc_list %}
+                            <option value="{{ idc.id }}">{{ idc.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <select multiple="multiple" class="form-control" size="4" name="hosts" id="group" >
+                        <option value="">————按组过滤————</option>
+                        {% for group in group_list %}
+                            <option value="{{ group.name }}">{{ group.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <select multiple="multiple" class="form-control" size="4" name="hosts" id="hosts" >
+                        <option value="*">————选择主机————</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="dir" class="control-label">文件路径</label>
+                    <input type="text" class="form-control" id='dir' placeholder="写全目录和文件名如：/tmp/1.txt">
+                </div>
+                <div class="form-group">
+                    <a href="" class="btn btn-primary btn-block" >
+                        <span class="glyphicon glyphicon-send"></span> 推 送</a>
+                </div>
+                <div class="form-group">
+                    <a href="" class="btn btn-primary btn-block">
+                        <span class="glyphicon glyphicon-download-alt"></span> 拉 取</a>
+                </div>
+            </form>
+        </div>
+        <div class="col-sm-8 col-md-9">
+            {% autopaginate file_list 8 %}
+            <div class="table-responsive" id="files" >
+                <table class="table table-hover table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th class="text-center">选择</th>
+                            <th class="text-center">文件名</th>
+                            <th class="text-center">文件大小</th>
+                            <th class="text-center">上传用户</th>
+                            <th class="text-center">上传时间</th>
+                            <th class="text-center">操作</th>
+                        </tr>
+                    </thead>
+                    {% for file in file_list %}
+                        <tbody>
+                            <tr id="row{{ forloop.counter }}">
+                                <td>
+                                    <label for="select_files" class="sr-only">选择文件</label>
+                                    <input type="checkbox" id="choice{{ forloop.counter }}" value="{{ file.id }}">
+                                </td>
+                                <td>{{ file.headImg }}</td>
+                                <td>{{ file.headImg.size|filesizeformat }}</td>
+                                <td>{{ file.username }}</td>
+                                <td>{{ file.date }}</td>
+                                <td class="text-center">
+                                    <a class="btn btn-primary btn-xs" href="{% url 'app:salt_file_download' file.headImg %}">
+                                        <span class="glyphicon glyphicon-download"></span> 下 载</a>
+                                    <button type="button" class="btn btn-danger btn-xs" onclick="file_delete({{ forloop.counter }},{{ file.id }},'{{ file.headImg }}')">
+                                        <span class="glyphicon glyphicon-trash"></span> 删 除</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    {% endfor %}
+                </table>
+            </div>
+            {% paginate %}
+        </div>
+    </div>
+
+    {#模态框#}
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <h4>上传文件到Django服务器
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                </h4>
+            </div>
+            <div class="modal-body">
+                <form action="{% url 'app:salt_file' %}" method="post" enctype="multipart/form-data" >
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label class="sr-only" for="id_headImg">上传文件:</label>
+                        <input id="id_headImg" name="headImg" type="file">
+                    </div>
+            {#    {{uf.as_p}}#}
+                    <div class="form-group help-block">
+                        <p>上传的文件将保存在Django服务器的“&lt;project_path&gt;/upload/”目录中.</p>
+                        <input class="btn btn-primary" type="submit" value="上传" id="upload"/>
+                        <a class="btn btn-primary" data-dismiss="modal">关闭</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{#<script src="{% static 'js/host_list.js' %}"></script>  单独存为JS时不识别{% url %}语法#}
+    <script>
+        $(document).ready(function(){
+            //按组过滤
+            $('#group').change(function(){
+                var idc_id = $('#idc').val();                  //获取机房选择对象的value值
+                var group_ids = $(this).val();                 //获取当前选择对象的value值，去掉了toString()
+                if (!idc_id) alert("请选择指定机房");
+                else host_list(idc_id,group_ids)
+            });
+            //按机房过滤
+            $('#idc').change(function(){
+                var idc_id = $(this).val();
+                var group_ids = $('#group').val();
+                host_list(idc_id,group_ids)
+            });
+            //主机列表过滤功能
+            function host_list(idc_id,group_ids) {
+{#                if(!arguments[0]) idc_id = ""; //设置默认值，下拉菜单默认值为空字符串，不用再设#}
+                if(!arguments[1]) group_ids = ""; //设置默认值，否则空数组返回undefined,是不能用toString的
+                $('#hosts').html("<option value='*'>————选择主机————</option>"); //初始化主机列表数据，*表示所有主机
+                $.getJSON("{% url 'app:host_list' %}",{idc_id:idc_id,group_ids:group_ids.toString()},function(result){
+                    //返回值 result 在这里是一个列表
+                    for (var i = result.length - 1; i >= 0; i--) {
+{#                      // 把 result 的每一项作为选项显示在网页上#}
+                        $("<option value='"+result[i]+"'>"+result[i]+"</option>").appendTo("#hosts");
+                    }
+                });
+                return false; //不刷新页面
+            }
+        });
+        //文件删除按钮调用功能
+        function file_delete(rownum,fileid,filename){
+            if(confirm("确定删除文件\""+filename+"\"吗?")){
+                $.get("{% url 'app:salt_file_delete' %}",{file_id:fileid},function(result){
+                    alert(result);
+                });
+                $('#row'+rownum).remove()
+            }
+        }
+    </script>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}<title>OMS｜退出</title>{% endblock %}
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
+                <div class="alert alert-success text-center" role="alert">
+                    <strong>您已成功退出，谢谢您的使用，再见！&#12288;&#12288;</strong>
+                    <a class="btn btn-success btn-lg" href="{% url 'app:login' %}">重新登录</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

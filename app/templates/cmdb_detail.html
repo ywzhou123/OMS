@@ -1,0 +1,82 @@
+{#{% extends "base.html" %}#}
+{#{% block title %}<title>OMS｜资产管理｜主机详细信息</title>{% endblock %}#}
+{#{% block bodyid %}cmdb_host{% endblock %}#}
+{#{% block main %}#}
+{#    <div class="container-fluid">#}
+{#        <ol class="breadcrumb">#}
+{#            <li><a href="{% url 'app:index' %}">首页</a></li>#}
+{#            <li><a href="#">资产管理</a></li>#}
+{#            <li><a href="{% url 'app:cmdb_host' %}">主机列表</a></li>#}
+{#            <li class="active">主机详细信息</li>#}
+{#        </ol>#}
+        <div class="modal-header text-center">
+            <h4>主机 {{ host_detail.ip }} 的详细信息
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </h4>
+        </div>
+        <div class="modal-body">
+            <div class="table-responsive">
+            <table class="table table-hover table-bordered table-striped">
+                <tbody>
+                    <tr>
+                        <td>主机名：</td>
+                        <td>{{ host_detail.hostname }}</td>
+                    </tr>
+                    <tr>
+                        <td>IP地址：</td>
+                        <td>{{ host_detail.ip }}</td>
+                    </tr>
+                    <tr>
+                        <td>其他IP地址：</td>
+                        <td>{{ host_detail.ip2 }}</td>
+                    </tr>
+                    <tr>
+                        <td>操作系统：</td>
+                        <td>{{ host_detail.os }}</td>
+                    </tr>
+                    <tr>
+                        <td>厂商：</td>
+                        <td>{{ host_detail.manufacturer }}</td>
+                    </tr>
+                    <tr>
+                        <td>产品型号：</td>
+                        <td>{{ host_detail.productname }}</td>
+                    </tr>
+                    <tr>
+                        <td>序列号：</td>
+                        <td>{{ host_detail.service_tag }}</td>
+                    </tr>
+                    <tr>
+                        <td>CPU型号：</td>
+                        <td>{{ host_detail.cpu_model }}</td>
+                    </tr>
+                    <tr>
+                        <td>CPU线程数：</td>
+                        <td>{{ host_detail.cpu_nums }}</td>
+                    </tr>
+                    <tr>
+                        <td>CPU物理核数：</td>
+                        <td>{{ host_detail.cpu_groups }}</td>
+                    </tr>
+                    <tr>
+                        <td>内存大小：</td>
+                        <td>{{ host_detail.mem }}</td>
+                    </tr>
+                    <tr>
+                        <td>硬盘大小：</td>
+                        <td>{{ host_detail.disk }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        </div>
+        <div class="modal-footer">
+            <div class="btn-group pull-right">
+                <a class="btn btn-info" href="#">初始化安装</a>
+                <a class="btn btn-info" href="#">数据采集</a>
+                <a class="btn btn-info" href="/admin/app/host_detail/{{ host_detail.id }}/" target="_blank">修改</a>
+                <a class="btn btn-info" data-dismiss="modal">关闭</a>
+            </div>
+        </div>
+{#    </div>#}
+{#{% endblock %}#}

@@ -1,0 +1,38 @@
+<div class="modal-header text-center">
+    <h4>Salt模块"{{ module.name }}"命令列表
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    </h4>
+</div>
+<div class="modal-body">
+    <div class="table-responsive">
+         <table class="table table-hover table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th class="text-center">命令</th>
+                    <th class="text-center">说明</th>
+{#                    <th class="text-center">功能</th>#}
+                    <th class="text-center">操作</th>
+                </tr>
+            </thead>
+            {% for cmd in cmd_list %}
+                <tbody>
+                    <tr>
+                        <td>{{ cmd.cmd }}</td>
+                        <td>{{ cmd.info }}</td>
+                        <td class="text-center">
+                            <a class="btn btn-primary btn-xs" href="/admin/app/salt_command/{{ cmd.id }}/" target="_blank">
+                                <span class="glyphicon glyphicon-edit"></span> 修 改
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+<div class="modal-footer">
+    <div class="btn-group pull-right">
+        <a class="btn btn-info" href="/admin/app/salt_command/add/" target="_blank">添加</a>
+        <a class="btn btn-info" data-dismiss="modal">关闭</a>
+    </div>
+</div>

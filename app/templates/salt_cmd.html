@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% load pagination_tags %}
+{% block title %}<title>OMS｜运维操作｜命令配置</title>{% endblock %}
+{% block nav_left_id %}"salt_cmd"{% endblock %}
+
+{% block main %}
+    <div class="container-fluid">
+        <ol class="breadcrumb">
+          <li><a href="{% url 'app:index' %}">首页</a></li>
+          <li><a href="#">运维操作</a></li>
+          <li class="active">命令配置</li>
+        </ol>
+        <h2>
+            命令配置列表
+            <span class="btn-group pull-right">
+                <a class="btn btn-info " href="/admin/app/salt_module/add/" target="_blank">添加模块</a>
+                <a class="btn btn-info " href="/admin/app/salt_command/add/" target="_blank">添加命令</a>
+                <a class="btn btn-info " href="/admin/app/salt_function/" target="_blank">查看功能</a>
+            </span>
+        </h2>
+        {% autopaginate module_list 8 %}
+        <div class="table-responsive" id="module" >
+            <table class="table table-hover table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th class="text-center">模块</th>
+                        <th class="text-center">说明</th>
+                        <th class="text-center">官方文档</th>
+                        <th class="text-center">操作</th>
+                    </tr>
+                </thead>
+                {% for module in module_list %}
+                <tbody>
+                    <tr>
+                        <td>
+                            <a href="{% url 'app:salt_module' module.id %}" data-toggle="modal" data-target="#myModal" title="命令列表">
+                                {{ module.name }}
+                            </a>
+                        </td>
+                        <td>{{ module.info }}</td>
+                        <td class="text-center">
+                            <a href="{{ module.url }}" title="官方文档" target="_blank">
+                                链 接
+                            </a>
+                        </td>
+                        <td class="text-center">
+                            <a class="btn btn-primary btn-xs" href="/admin/app/salt_module/{{ module.id }}/" target="_blank">
+                                <span class="glyphicon glyphicon-edit"></span> 修 改
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+                {% endfor %}
+            </table>
+        </div>
+        {% paginate %}
+    </div>
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        //模态框隐藏时清除数据，否则一直显示第一次加载的主机信息
+        $(function () { $('#myModal').on('hidden.bs.modal', function () {
+            $("#myModal").removeData("bs.modal")
+              ;})
+           });
+    </script>
+{% endblock %}

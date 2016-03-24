@@ -1,0 +1,255 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% block title %}
+    <title>OMS｜运维操作｜手动操作</title>
+{#    JSON格式化，参考http://jsfiddle.net/7z1mwjy0/#}
+    <script src="{% static 'js/formatJSON.js' %}"></script>
+    <style>
+        td {
+            vertical-align: middle;
+            text-align: center;
+        }
+        textarea {
+            white-space: pre;
+{#            font-size: 14px;#}
+            font-family: Courier, monospace;
+            width:100%;
+{#            height:400px;#}
+            border-style: none;
+            background-color: initial;
+        }
+    </style>
+{% endblock %}
+{% block nav_left_id %}"salt_cmd_run"{% endblock %}
+{% block main %}
+    <ol class="breadcrumb">
+        <li><a href="{% url 'app:index' %}">首页</a></li>
+        <li><a href="#">运维操作</a></li>
+        <li class="active">手动操作</li>
+    </ol>
+    <div class="row">
+        <div class="col-sm-4 col-md-3"  >
+            <form role="form" method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <select class="form-control" name="idc" id="idc" >
+                        <option value="">————选择机房————</option>
+                        {% for idc in idc_list %}
+                            <option value="{{ idc.id }}">{{ idc.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <select multiple="multiple" class="form-control" size="4" name="hosts" id="group" >
+                        <option value="">————按组过滤————</option>
+                        {% for group in group_list %}
+                            <option value="{{ group.name }}">{{ group.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <select multiple="multiple" class="form-control" size="4" name="hosts" id="hosts" >
+                        <option value="'*'">————选择主机————</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <select class="form-control" name="module" id="module">
+                        <option value="">————选择模块————</option>
+                        {% for module in module_list %}
+                            <option value="{{ module.id }}">{{ module.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <select class="form-control" name="cmd" id="cmd">
+                        <option value="">————选择命令————</option>
+{#                        {% for cmd in cmd_list %}#}
+{#                            <option value="{{ cmd.cmd }}">{{ cmd.cmd }}</option>#}
+{#                        {% endfor %}#}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <input class="form-control" type="text" value="" id="args" name="args"
+                           placeholder="请输入参数，多个参数以逗号分隔">
+                </div>
+                <div class="form-group">
+                    <button type="button" id="run" class="btn btn-primary btn-block">
+                        <span class="glyphicon glyphicon-play"></span> 执 行</button>
+                </div>
+                <div class="form-group">
+                    <a href="" class="btn btn-primary btn-block" data-toggle="modal" data-target="#myModal">
+                        <span class="glyphicon glyphicon-floppy-save"></span> 保 存</a>
+                </div>
+            </form>
+        </div>
+
+        <div class="col-sm-8 col-md-9">
+            <div class="command" hidden>
+                <h4>命令：<code><span  id="command"></span></code></h4>
+            </div>
+            <div class="table-responsive" >
+                <table class="table table-hover table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th class="text-center">操作目标</th>
+                            <th class="text-center">返回结果</th>
+                        </tr>
+                    </thead>
+                    <tbody class="tbody"></tbody>
+                </table>
+            </div>
+            <div id="forjson"></div>
+        </div>
+    </div>
+{#    模态框#}
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                 <div class="modal-header text-center">
+                    <h4>设置Salt功能
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <form class="bs-example bs-example-form" role="form">
+                        <div class="input-group text-center">
+                            <label for="name_save">名 称</label>
+                            <input class="form-control" type="text" id="name_save"/><br>
+                            <label for="cmd_save">命 令</label>
+                            <input class="form-control" type="text" id="cmd_save"/><br>
+                            <label for="args_save">参 数</label>
+                            <input class="form-control" type="text" id="args_save"/><br>
+                            <label for="info_save">说 明</label>
+                            <input class="form-control" type="text" id="info_save"/>
+                         </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <div class="btn-group pull-right">
+                        <button type="button" class="btn btn-info" id="save">确 认</button>
+                        <a class="btn btn-info" data-dismiss="modal">关 闭</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block scripts %}
+    <script>
+        $(document).ready(function(){
+            //按组过滤
+            $('#group').change(function(){
+                var idc_id = $('#idc').val();                  //获取机房选择对象的value值
+                var group_ids = $(this).val();                 //获取当前选择对象的value值，去掉了toString()
+                if (!idc_id) alert("请选择指定机房");
+                else host_list(idc_id,group_ids)
+            });
+            //按机房过滤
+            $('#idc').change(function(){
+                var idc_id = $(this).val();
+                var group_ids = $('#group').val();
+                host_list(idc_id,group_ids)
+            });
+            //主机列表过滤功能
+            function host_list(idc_id,group_ids) {
+{#                if(!arguments[0]) idc_id = ""; //设置默认值，下拉菜单默认值为空字符串，不用再设#}
+                if(!arguments[1]) group_ids = ""; //设置默认值，否则空数组返回undefined,是不能用toString的
+                $('#hosts').html("<option value='*'>————选择主机————</option>"); //初始化主机列表数据，*表示所有主机
+                $.getJSON("{% url 'app:host_list' %}",{idc_id:idc_id,group_ids:group_ids.toString()},function(result){
+                    //返回值 result 在这里是一个列表
+                    for (var i = result.length - 1; i >= 0; i--) {
+{#                      // 把 result 的每一项作为选项显示在网页上#}
+                        $("<option value='"+result[i]+"'>"+result[i]+"</option>").appendTo("#hosts");
+                    }
+                });
+                return false; //不刷新页面
+            }
+
+            //模块列表+命令列表级联
+            $('#module').change(function () {
+                $('#cmd').html("<option value='*'>————选择命令————</option>"); //初始化数据
+                var module_id = $(this).val();                 //获取当前选择对象的value值
+                $.getJSON("{% url 'app:cmd_list' %}",{module_id:module_id},function(result){
+                    //返回值 result 在这里是一个列表
+                    for (var i = result.length - 1; i >= 0; i--) {
+{#                      // 把 result 的每一项作为选项显示在网页上#}
+                        $("<option value='"+result[i]+"'>"+result[i]+"</option>").appendTo("#cmd");
+                    }
+                });
+                return false; //不刷新页面
+            });
+
+
+            //点击执行按钮，传送命令给后台，返回数据在前台显示
+            $('#run').click(function(){
+                $('.tbody').html('<tr><td>执行结果加载中。。。</td><td></td></tr>');
+                //传送参数，显示后台返回的数据
+                var idc = $('#idc').val();
+                var host_v = $('#hosts').val();
+                if (!host_v) {
+                    alert("请选择主机！")
+                }
+                else{
+                    var hosts = host_v.toString()
+                }   //多选择工具的值是个列表，需要转化成字符串);
+                var cmd = $('#cmd').val();
+                var args = $('#args').val();
+                $.getJSON("{% url 'app:cmd_run_done' %}",{idc:idc,hosts:hosts,cmd:cmd,args:args},function(result){
+                    //移除第一行
+                    $(".tbody tr:eq(0)").remove();
+                    for (var key in result){
+                        //JSON格式显示，调用app\static\js\formatJSON.js
+                        if (typeof result[key] == 'string') {
+                            var option = result[key]
+                        }
+                        else {
+                            option = formatJson(result[key], true)
+                        }
+                        item = "<tr><td>"+key+"</td><td><textarea readonly>"+option+"</textarea></td></tr>";
+                        //文本域控件不需要对字符进行转义，否则\r\n不会在页面上换行
+                        $('.tbody').append(item);
+                    }
+
+                });
+
+                //显示完整的命令
+                var command = 'salt "'+hosts+'" "'+cmd+'" ['+args+']';
+                $('#command').html(command);
+                $('.command').show();
+                return false;
+            });
+
+
+            //点击保存按钮，保存为salt功能
+            $('#save').click(function(){
+                var name = $('#name_save').val();
+                var cmd = $('#cmd_save').val();
+                var args = $('#args_save').val();
+                var info = $('#info_save').val();
+                if(!name){alert("名称不能为空")}
+                else if(!cmd){alert("命令不能为空")}
+                else{
+                    //传送参数，显示后台返回的数据
+                    $.getJSON("{% url 'app:salt_func_save' %}",{name:name,cmd:cmd,args:args,info:info},function(result){
+                        if(result){
+                            alert("功能添加成功！");
+                            $('#myModal').modal('hide');
+                        }
+                        else{alert("功能命令已存在，请重新输入！")}
+                    })
+                }
+            });
+            //模态框显示时捕获数据，隐藏时清除数据
+            $('#myModal').on('show.bs.modal', function () {
+                var cmd = $('#cmd').val();
+                var args = $('#args').val();
+                $('#cmd_save').val(cmd);
+                $('#args_save').val(args);
+            }).on('show.bs.modal', function () {
+                $('#name_save').val('');
+                $('#info_save').val('');
+            })
+        });
+
+    </script>
+{% endblock %}

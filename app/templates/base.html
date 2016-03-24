@@ -1,0 +1,55 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link rel="icon" href="{% static 'img/logo.png' %}" type="image/x-icon">
+    <link rel="shortcut icon" href="{% static 'img/logo.png' %}" type="image/x-icon">
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/bootstrap-theme.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/nav_left.css' %} ">
+    <script src="{% static 'js/jquery-2.2.0.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    {% block title %}{% endblock %}
+</head>
+{#<body data-id="{% block bodyid %}{% endblock %}">#}
+<body>
+{% block nav %}
+    {% include "nav_top.html" %}
+    {% if user.is_authenticated  %}
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-3 col-md-2 sidebar">
+                    {% include "nav_left.html" %}
+                </div>
+                <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+                    {% block main %}{% endblock %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}
+{% block content %}{% endblock %}
+{% block footer %}{% endblock %}
+{% block scripts %}{% endblock %}
+<script>
+    //页面展示对应的左侧导航点中效果
+    $(function(){
+        var loadPage = function(){
+            id={% block nav_left_id %}{% endblock %};
+            var $el= $('#'+id);
+            $el.closest('.collapse').addClass('in');
+            $el.closest("li").addClass('active');
+        };
+        $(".nav>li>a").on('click',function(e){
+            $(this).tab("show");
+        });
+        loadPage();
+    });
+</script>
+</body>
+</html>
+
+
+

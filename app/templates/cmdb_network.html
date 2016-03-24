@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}<title>OMS｜资产管理｜网络资产</title>{% endblock %}
+{% block nav_left_id %}"cmdb_network"{% endblock %}
+{% block main %}
+    <div class="container-fluid">
+        <ol class="breadcrumb">
+          <li><a href="{% url 'app:index' %}">首页</a></li>
+          <li><a href="#">资产管理</a></li>
+          <li class="active">网络资产</li>
+        </ol>
+        <h2>网络资产管理
+            <a class="btn btn-info pull-right" href="/admin/app/network/add/" target="_blank">添加网络设备</a>
+        </h2>
+       <div class="table-responsive">
+            <table class="table table-hover table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th class="text-center">名称</th>
+                        <th class="text-center">品牌</th>
+                        <th class="text-center">型号</th>
+                        <th class="text-center">外网IP</th>
+                        <th class="text-center">内网IP</th>
+                        <th class="text-center">所属机房</th>
+                        <th class="text-center">说明</th>
+                        <th class="text-center">链接</th>
+                        <th class="text-center">操作</th>
+                    </tr>
+                </thead>
+                {% for net in net_list %}
+                    <tbody>
+                        <tr>
+                            <td>{{ net.name }}</td>
+                            <td>{{ net.brand }}</td>
+                            <td>{{ net.model }}</td>
+                            <td>{{ net.ip_out }}</td>
+                            <td>{{ net.ip_in }}</td>
+                            <td>{{ net.idc_name }}</td>
+                            <td>{{ net.info }}</td>
+                            <td class="text-center"><a  href="{{ net.url }}" target="_blank">链接</a></td>
+                            <td class="text-center">
+                                <a class="btn btn-primary btn-xs" href="/admin/app/network/{{ net.id }}/" target="_blank">
+                                    <span class="glyphicon glyphicon-edit"></span> 修 改
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+{% endblock %}

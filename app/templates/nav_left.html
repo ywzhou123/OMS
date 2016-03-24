@@ -1,0 +1,110 @@
+<div class="panel-group text-center" id="accordion" role="tablist" aria-multiselectable="true">
+  <div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="headingOne">
+      <h4 class="panel-title">
+        <a  role="button" data-toggle="collapse" data-parent="#accordion"
+           href="#collapseOne" aria-expanded="false" aria-controls="collapseOne" >
+            <span class="glyphicon glyphicon-list-alt"></span>
+            <strong >资产管理</strong>
+        </a>
+      </h4>
+    </div>
+    <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne"
+         aria-expanded="false">
+      <div class="panel-body nav-left">
+        <ul class="nav nav-pills nav-stacked">
+            <li role="presentation"><a id="cmdb_idc" href="{% url 'app:cmdb_idc' %}"><strong>数据中心资产</strong></a></li>
+            <li role="presentation"><a id="cmdb_server" href="{% url 'app:cmdb_server' %}"><strong>服务器资产</strong></a></li>
+            <li role="presentation"><a id="cmdb_host" href="{% url 'app:cmdb_host' %}"><strong>主机列表</strong></a></li>
+            <li role="presentation"><a id="cmdb_network" href="{% url 'app:cmdb_network' %}"><strong>网络资产</strong></a></li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="headingTwo">
+      <h4 class="panel-title">
+        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo"
+           aria-expanded="false" aria-controls="collapseTwo">
+            <span class="glyphicon glyphicon-stats"></span>
+            <strong>监控平台</strong>
+        </a>
+      </h4>
+    </div>
+    <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo" aria-expanded="false">
+      <div class="panel-body nav-left">
+        <ul class="nav nav-pills nav-stacked nav-sidebar">
+{#          <li role="presentation"><a id="{{ bodyid }}" href="{% url 'app:monitor' obj='system' %}"><strong>系统性能</strong></a></li>#}
+          <li role="presentation"><a  href=""><strong>系统性能</strong></a></li>
+          <li role="presentation"><a  href=""><strong>应用状态</strong></a></li>
+          <li role="presentation"><a  href="#"><strong>数据库监控</strong></a></li>
+          <li role="presentation"><a  href="#"><strong>MongoDB监控</strong></a></li>
+          <li role="presentation"><a  href="#"><strong>IIS站点监控</strong></a></li>
+          <li role="presentation"><a  href="#"><strong>网络设备监控</strong></a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="headingThree">
+      <h4 class="panel-title">
+        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+            <span class="glyphicon glyphicon-tasks"></span>
+            <strong>运维操作</strong>
+        </a>
+      </h4>
+    </div>
+    <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree"
+         aria-expanded="false">
+      <div class="panel-body nav-left">
+        <ul class="nav nav-pills nav-stacked nav-sidebar">
+          <li role="presentation"><a id="salt_cmd" href="{% url 'app:salt_cmd' %}"><strong>命令配置</strong></a></li>
+          <li role="presentation"><a id="salt_cmd_run" href="{% url 'app:salt_cmd_run' %}"><strong>执行命令</strong></a></li>
+          <li role="presentation"><a id="salt_file" href="{% url 'app:salt_file' %}"><strong>文件管理</strong></a></li>
+          <li role="presentation"><a id="salt_func" href="{% url 'app:salt_func' %}"><strong>功能管理</strong></a></li>
+          <li role="presentation"><a id="salt_flow" href="{% url 'app:salt_flow' %}"><strong>流程管理</strong></a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="headingFour">
+      <h4 class="panel-title">
+        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+            <span class="glyphicon glyphicon-equalizer"></span>
+            <strong>数据统计</strong>
+        </a>
+      </h4>
+    </div>
+    <div id="collapseFour" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFour" aria-expanded="false">
+      <div class="panel-body nav-left">
+        <ul class="nav nav-pills nav-stacked nav-sidebar">
+          <li role="presentation"><a href="#"><strong>访问量统计</strong></a></li>
+          <li role="presentation"><a href="#"><strong>数据增量统计</strong></a></li>
+          <li role="presentation"><a href="#"><strong>网络流量统计</strong></a></li>
+          <li role="presentation"><a id="abc" href="#"><strong>连接数统计</strong></a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="headingFive">
+      <span class="panel-title">
+        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+            <span class="glyphicon glyphicon-file"></span>
+            <strong>操作日志</strong>
+        </a>
+      </span>
+    </div>
+    <div id="collapseFive" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFive" aria-expanded="false" >
+      <div class="panel-body nav-left" >
+        <ul class="nav nav-pills nav-stacked nav-sidebar">
+          <li role="presentation"><a href="#"><strong>操作日志</strong></a></li>
+          <li role="presentation"><a href="#"><strong>管理日志</strong></a></li>
+          <li role="presentation"><a href="#"><strong>登录日志</strong></a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

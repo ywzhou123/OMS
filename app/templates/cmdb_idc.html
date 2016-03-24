@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}<title>OMS｜资产管理｜数据中心资产</title>{% endblock %}
+{% block nav_left_id %}"cmdb_idc"{% endblock %}
+{% block main %}
+    <div class="container-fluid">
+        <ol class="breadcrumb">
+          <li><a href="{% url 'app:index' %}">首页</a></li>
+          <li><a href="#">资产管理</a></li>
+          <li class="active">数据中心资产</li>
+        </ol>
+        <h2>数据中心资产管理
+            <span class="pull-right">
+                <a class="btn btn-info" href="/admin/app/idc/add/" target="_blank">添加IDC</a>
+            </span>
+        </h2>
+       <div class="table-responsive">
+            <table class="table table-hover table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th class="text-center">机房名称</th>
+                        <th class="text-center">机房类型</th>
+                        <th class="text-center">公网IP地址</th>
+                        <th class="text-center">机房地址</th>
+                        <th class="text-center">联系方式</th>
+                        <th class="text-center">操作</th>
+                    </tr>
+                </thead>
+                {% for idc in idc_list %}
+                    <tbody>
+                        <tr>
+                            <td>{{ idc.name }}</td>
+                            <td>{{ idc.type }}</td>
+                            <td>{{ idc.ips }}</td>
+                            <td>{{ idc.address }}</td>
+                            <td>{{ idc.contact }}</td>
+                            <td class="text-center">
+                                <a class="btn btn-primary btn-xs" href="/admin/app/idc/{{ idc.id }}/" target="_blank">
+                                    <span class="glyphicon glyphicon-edit"></span> 修 改
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+{% endblock %}
+{#<script >#}
+{#    $('#collapseFour').collapse({#}
+{#        toggle: true#}
+{#    })#}
+{#</script>#}

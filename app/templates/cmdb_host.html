@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% load pagination_tags %}
+{% block title %}<title>OMS｜资产管理｜主机列表</title>{% endblock %}
+{% block nav_left_id %}"cmdb_host"{% endblock %}
+{% block main %}
+    <div class="container-fluid">
+        <ol class="breadcrumb">
+          <li><a href="{% url 'app:index' %}">首页</a></li>
+          <li><a href="#">资产管理</a></li>
+          <li class="active">主机列表</li>
+        </ol>
+        <h2>
+            主机列表
+            <span class="pull-right">
+                <a class="btn btn-info" href="/admin/app/host/add/" target="_blank">添加主机</a>
+            </span>
+        </h2>
+        {% autopaginate host_list 8 %}
+        <div class="table-responsive" id="hosts" >
+            <table class="table table-hover table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th class="text-center">IP地址</th>
+                        <th class="text-center">主机名称</th>
+                        <th class="text-center">所属组</th>
+                        <th class="text-center">功能说明</th>
+                        <th class="text-center">使用状态</th>
+                        <th class="text-center">所属服务器</th>
+                        <th class="text-center">操作</th>
+                    </tr>
+                </thead>
+                {% for host in host_list %}
+                    <tbody>
+                        <tr>
+                            <td>
+{#                                <a href="{% url 'app:cmdb_detail' host.ip %}" title="详细信息">#}
+                                <a href="{% url 'app:cmdb_detail' host.ip %}" title="详细信息"  data-toggle="modal" data-target="#myModal">
+                                    {{ host.ip }}
+                                </a>
+                            </td>
+                            <td>{{ host.name }}</td>
+                            <td>
+                                {% for app in host.group.all %}
+                                    {{ app }}
+                                {% endfor %}
+                            </td>
+                            <td>{{ host.app }}</td>
+                            <td>
+                                {% if host.status %}使用中
+                                {% else %}已停用
+                                {% endif %}
+                            </td>
+                            <td>{{ host.server_name }}</td>
+                            <td class="text-center">
+                                <a class="btn btn-primary btn-xs" href="/admin/app/host/{{ host.id }}/" target="_blank">
+                                    <span class="glyphicon glyphicon-edit"></span> 修 改
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                {% endfor %}
+            </table>
+        </div>
+        {% paginate %}
+    </div>
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog">
+        <div class="modal-content"></div>
+      </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        //模态框隐藏时清除数据（主机详细信息），否则一直显示第一次加载的主机信息
+        $(function () { $('#myModal').on('hidden.bs.modal', function () {
+            $("#myModal").removeData("bs.modal")
+              ;})
+           });
+    </script>
+{% endblock %}

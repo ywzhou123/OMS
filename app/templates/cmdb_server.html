@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}<title>OMS｜资产管理｜服务器资产</title>{% endblock %}
+{% block nav_left_id %}"cmdb_server"{% endblock %}
+{% block main %}
+    <div class="container-fluid">
+        <ol class="breadcrumb">
+          <li><a href="{% url 'app:index' %}">首页</a></li>
+          <li><a href="#">资产管理</a></li>
+          <li class="active">服务器资产</li>
+        </ol>
+        <h2>服务器资产管理
+            <a class="btn btn-info pull-right" href="/admin/app/server/add/" target="_blank">添加服务器</a>
+        </h2>
+       <div class="table-responsive">
+            <table class="table table-hover table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th class="text-center">IP地址</th>
+                        <th class="text-center">服务器名称</th>
+                        <th class="text-center">品牌</th>
+                        <th class="text-center">型号</th>
+                        <th class="text-center">序列号</th>
+                        <th class="text-center">机架位置</th>
+                        <th class="text-center">系统环境</th>
+                        <th class="text-center">所属机房</th>
+                        <th class="text-center">操作</th>
+                    </tr>
+                </thead>
+                {% for server in server_list %}
+                    <tbody>
+                        <tr>
+                            <td>{{ server.ip }}</td>
+                            <td>{{ server.name }}</td>
+                            <td>{{ server.brand }}</td>
+                            <td>{{ server.model }}</td>
+                            <td>{{ server.sn }}</td>
+                            <td>{{ server.location }}</td>
+                            <td>{{ server.system }}</td>
+                            <td>{{ server.idc_name }}</td>
+                            <td class="text-center">
+                                <a class="btn btn-primary btn-xs" href="/admin/app/server/{{ server.id }}/" target="_blank">
+                                    <span class="glyphicon glyphicon-edit"></span> 修 改
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+{% endblock %}

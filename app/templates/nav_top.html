@@ -1,0 +1,105 @@
+{% load staticfiles %}
+{#顶部导航条，左边图标加网站名称，右边用户、登录、改密、退出按钮#}
+<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target=".bs-navbar-collapse">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+        <a class="navbar-brand" href="{% url 'app:index' %}" title="首页">
+            OMS 运维管理系统
+{#            <img src="{% static 'img/logo.png' %}" alt="LOGO" align="left" height="30px"/>#}
+        </a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse bs-navbar-collapse">
+      <ul class="nav navbar-nav navbar-right">
+        {% if user.is_authenticated %}
+        <li>
+            <p class="navbar-text">欢迎</p>
+        </li>
+        <li>
+            <a href="#" title="个人信息" data-toggle="modal" data-target="#modal-user">
+                <span class="glyphicon glyphicon-user" aria-hidden="true"></span> {{ user.username }}
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'app:password_change' %}" title="配置文件">
+                <span class="glyphicon glyphicon-cog" aria-hidden="true"></span> 设置
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'app:logout' %}?next=/blog/" title="退出">
+                <span class="glyphicon glyphicon-log-out" aria-hidden="true"></span> 退出
+            </a>
+        </li>
+        {% else %}
+        <li>
+              <a href="{% url 'app:login' %}?next={{ request.path  }}">
+                  <span class="glyphicon glyphicon-log-out" aria-hidden="true"></span> 登录
+              </a>
+        </li>
+        {% endif %}
+          <li>
+                  <a href="/admin/app/" target="_blank">
+                      <span class="glyphicon glyphicon-briefcase" aria-hidden="true"></span> 后台
+                  </a>
+            </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!--fade表示一个过渡效果（淡入淡出效果）-->
+<div class="modal fade bs-example-modal-xs" id="modal-user" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title text-center">个人信息</h4>
+      </div>
+      <div class="modal-body ">
+          <div class="table-responsive">
+            <table class="table table-hover table-bordered table-striped">
+                    <tbody>
+                        <tr>
+                            <td>用户名：</td>
+                            <td>{{ user.username }}</td>
+                        </tr>
+                        <tr>
+                            <td>姓氏：</td>
+                            <td>{{ user.first_name }}</td>
+                        </tr>
+                        <tr>
+                            <td>名字：</td>
+                            <td>{{ user.last_name }}</td>
+                        </tr>
+                        <tr>
+                            <td>邮箱：</td>
+                            <td>{{ user.email }}</td>
+                        </tr>
+                        <tr>
+                            <td>注册时间：</td>
+                            <td>{{ user.date_joined }}</td>
+                        </tr>
+                        <tr>
+                            <td>最后登录时间：</td>
+                            <td>{{ user.last_login }}</td>
+                        </tr>
+                    </tbody>
+            </table>
+          </div>
+      </div>
+      <div class="modal-footer">
+          <a class="btn btn-primary" href="{% url 'app:password_change' %}" >
+            <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> 修改密码
+          </a>
+        <button type="button" class="btn btn-primary" data-dismiss="modal">
+            <span class="glyphicon glyphicon-remove-sign" aria-hidden="true"></span> 关闭
+        </button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

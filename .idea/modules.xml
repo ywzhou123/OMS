@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/OMS.iml" filepath="$PROJECT_DIR$/.idea/OMS.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../oms-master/.idea/oms-master.iml" filepath="$PROJECT_DIR$/../oms-master/.idea/oms-master.iml" />
+    </modules>
+  </component>
+</project>
