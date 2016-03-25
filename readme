@@ -6,6 +6,7 @@ QQ群：342844540
 1、目录说明
 OMS----项目主目录
  |----OMS：项目配置文件，添加了一个自定义配置文件config.ini
+ |----SQL：存放Mysql数据库导出文件，导入使用mysql>source <path>/oms.sql;
  |----SaltstackServer：控制层服务端程序脚本及相关安装方法
  |     |----rpycserver.py：传输进程脚本
  |     |----rpycserver.sh：传输服务脚本
