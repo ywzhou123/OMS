@@ -15,7 +15,7 @@ import json
 from django import forms
 from django.http import StreamingHttpResponse
 import os
-
+from SaltAPI import SaltAPI
 #######################################################################################################################
 #基础模块：登陆、登出、改密、欢迎页
 def login(request):
@@ -262,7 +262,52 @@ def salt_file_delete(request):
                 msg = err
                 print err
             return HttpResponse(msg)
+
+#http://xiaorui.cc/2014/11/12/saltstack-cp实现配置代码文件的管理拉取和回滚下发/
+#salt '*' cp.get_url http://xiaorui.cc/good.txt  /tmp/good.txt
 def file_push(request):
+   # salt 'lvs150.xiaorui.cc' cp.push /etc/keepalived/conf.d/wan/reallist.conf
     pass
 def file_pull(request):
     pass
+
+
+#######################################################################################################################
+#SaltAPI通过urllib2调用
+def salt_cmd2(idc,tgt,fun,arg,client='local',expr_form="list"):
+    salt_server = Salt_Server.objects.get(idc=idc) #根据机房ID选择对应salt服务端
+    sapi = SaltAPI(url=salt_server.url,username=salt_server.username,password=salt_server.password)
+    params = {'client':client, 'fun':fun, 'tgt':tgt, 'expr_form':expr_form}
+    result = sapi.saltCmd(params)
+    print result,type(result)
+    return result
+
+@login_required
+def salt_cmd_run2(request):
+    idc_list = IDC.objects.order_by('id')
+    group_list = Group.objects.order_by('name')
+    # cmd_list = Salt_Command.objects.order_by('cmd')
+    module_list = Salt_Module.objects.order_by('name')
+    return  render(request, 'salt_cmd_run2.html', locals())
+
+def cmd_run_done2(request):
+    if request.is_ajax():
+        if request.method == 'GET':
+            idc = str(request.GET.get('idc',''))
+            hosts = str(request.GET.get('hosts'))
+            cmd =str(request.GET.get('cmd',''))
+            args = str(request.GET.get('args',''))
+            print idc,hosts,cmd,args
+            result = salt_cmd2(idc=idc,tgt=hosts,fun=cmd,arg=args,client='local',expr_form="list")
+            print result
+            print type(result)
+            return JsonResponse(result)
+
+
+def salt_cmd3(idc,tgt,fun,arg,client="local",expr_form="list"):
+    from models import Salt_Server
+    salt_server = Salt_Server.objects.get(idc=idc) #根据机房ID选择对应salt服务端
+    sapi = SaltAPI(url=salt_server.url,username=salt_server.username,password=salt_server.password)
+    params = {'client':client, 'fun':fun, 'tgt':tgt, 'expr_form':expr_form}
+    result = sapi.saltCmd(params)
+    return result

@@ -17,6 +17,7 @@ urlpatterns = [
     #SALT URL
     url(r'^salt_cmd/$', salt_cmd, name='salt_cmd'),
     url(r'^salt_cmd_run/$', salt_cmd_run, name='salt_cmd_run'),
+    url(r'^salt_cmd_run2/$', salt_cmd_run2, name='salt_cmd_run2'),
     url(r'^salt_file/$', salt_file, name='salt_file'),
     url(r'^salt_func/$', salt_func, name='salt_func'),
     url(r'^salt_flow/$', salt_flow, name='salt_flow'),
@@ -26,6 +27,7 @@ urlpatterns = [
     url(r'^cmd_list/$', cmd_list, name='cmd_list'),
     url(r'^salt_module/(?P<module_id>[0-9]+)/$', salt_module, name='salt_module'),
     url(r'^cmd_run_done/$', cmd_run_done, name='cmd_run_done'),
+    url(r'^cmd_run_done2/$', cmd_run_done2, name='cmd_run_done2'),
     url(r'^salt_func_list/$', salt_func_list, name='salt_func_list'),
     url(r'^salt_func_save/$', salt_func_save, name='salt_func_save'),
     url(r'^salt_file_delete/$', salt_file_delete, name='salt_file_delete'),

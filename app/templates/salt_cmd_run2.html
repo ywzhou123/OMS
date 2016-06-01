@@ -1,0 +1,220 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% block title %}
+    <title>OMS｜运维操作｜手动操作</title>
+{% endblock %}
+{% block nav_left_id %}"salt_cmd_run2"{% endblock %}
+{% block main %}
+    <ol class="breadcrumb">
+        <li><a href="{% url 'app:index' %}">首页</a></li>
+        <li><a href="#">运维操作</a></li>
+        <li class="active">手动操作</li>
+    </ol>
+{#    主机选择面板#}
+     <div class="panel panel-default">
+         <div class="panel-heading">
+             <h4 class="panel-title text-center" >
+                 <a data-toggle="collapse" href="#collapse1">Target</a>
+             </h4>
+         </div>
+         <div id="collapse1" class="panel-collapse collapse in">
+             <div class="panel-body">
+                 <div class="row">
+                     <div class="col-sm-4 col-md-4">
+                         <div class="form-group">
+                             <select class="form-control" name="idc" id="idc" >
+                                 <option value="">————选择机房————</option>
+                                 {% for idc in idc_list %}
+                                     <option value="{{ idc.id }}">{{ idc.name }}</option>
+                                 {% endfor %}
+                             </select>
+                         </div>
+                     </div>
+                     <div class="col-sm-4 col-md-4">
+                         <div class="form-group">
+                             <select multiple="multiple" class="form-control" size="6" name="hosts" id="group" >
+                                 <option value="">————按组过滤————</option>
+                                 {% for group in group_list %}
+                                     <option value="{{ group.name }}">{{ group.name }}</option>
+                                 {% endfor %}
+                             </select>
+                         </div>
+                     </div>
+                     <div class="col-sm-4 col-md-4">
+                         <div class="form-group">
+                             <select multiple="multiple" class="form-control" size="6" name="hosts" id="hosts" >
+                                 <option value="">————选择主机————</option>
+                             </select>
+                         </div>
+                     </div>
+                 </div>
+
+             </div>
+         </div>
+     </div>
+{#    命令选择面板#}
+     <div class="panel panel-default">
+         <div class="panel-heading">
+             <h4 class="panel-title text-center">
+                 <a data-toggle="collapse" href="#collapse2" >
+                     Command
+                 </a>
+             </h4>
+         </div>
+         <div id="collapse2" class="panel-collapse collapse in">
+             <div class="panel-body">
+                 <div class="row">
+                     <div class="col-sm-3 col-md-3">
+                         <div class="form-group">
+                             <select class="form-control" name="module" id="module">
+                                 <option value="">————选择模块————</option>
+                                 {% for module in module_list %}
+                                     <option value="{{ module.id }}">{{ module.name }}</option>
+                                 {% endfor %}
+                             </select>
+                         </div>
+                     </div>
+                     <div class="col-sm-3 col-md-3">
+                         <div class="form-group">
+                             <select class="form-control" name="cmd" id="cmd">
+                                 <option value="">————选择命令————</option>
+                             </select>
+                         </div>
+                     </div>
+                     <div class="col-sm-3 col-md-3">
+                         <div class="form-group">
+                             <input class="form-control" type="text" value="" id="args" name="args" placeholder="请输入参数，多个参数以逗号分隔">
+                         </div>
+                     </div>
+                     <div class="col-sm-3 col-md-3">
+                         <form role="form" method="post">
+                             {% csrf_token %}
+                             <div class="form-group">
+                                 <button type="button" id="run" class="btn btn-info btn-block"><span class="glyphicon glyphicon-play"></span> 执 行</button>
+                             </div>
+                         </form>
+                     </div>
+                 </div>
+             </div>
+         </div>
+     </div>
+
+{#    结果展示面板#}
+    <div class="panel panel-default">
+         <div class="panel-heading">
+             <h4 class="panel-title text-center">
+                 <a data-toggle="collapse" href="#collapse3">
+                    Monitor
+                 </a>
+             </h4>
+         </div>
+         <div id="collapse3" class="panel-collapse collapse in">
+             <div class="panel-body">
+                 <div class="command" hidden>
+                <h4>命令：<code><span  id="command"></span></code></h4>
+            </div>
+                 <div class="btn-group">
+                     <div class="btn-group">
+                         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Command<span class="caret"></span></button>
+                         <ul class="dropdown-menu" id="Command">
+                         </ul>
+                     </div>
+                     <div class="btn-group">
+                         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Job<span class="caret"></span></button>
+                         <ul class="dropdown-menu" id="Job">
+                         </ul>
+                     </div>
+                     <div class="btn-group">
+                         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Minion<span class="caret"></span></button>
+                         <ul class="dropdown-menu" id="Minion">
+                         </ul>
+                     </div>
+
+                     <div class="btn-group">
+                         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Event<span class="caret"></span></button>
+                         <ul class="dropdown-menu" id="Event">
+                         </ul>
+                     </div>
+                 </div>
+             </div>
+         </div>
+     </div>
+
+
+
+
+
+{% endblock %}
+{% block scripts %}
+    <script>
+        $(document).ready(function(){
+            //按组过滤
+            $('#group').change(function(){
+                var idc_id = $('#idc').val();                  //获取机房选择对象的value值
+                var group_ids = $(this).val();                 //获取当前选择对象的value值，去掉了toString()
+                if (!idc_id) alert("请选择指定机房");
+                else host_list(idc_id,group_ids)
+            });
+            //按机房过滤
+            $('#idc').change(function(){
+                var idc_id = $(this).val();
+                var group_ids = $('#group').val();
+                host_list(idc_id,group_ids)
+            });
+            //主机列表过滤功能
+            function host_list(idc_id,group_ids) {
+{#                if(!arguments[0]) idc_id = ""; //设置默认值，下拉菜单默认值为空字符串，不用再设#}
+                if(!arguments[1]) group_ids = ""; //设置默认值，否则空数组返回undefined,是不能用toString的
+                $('#hosts').html("<option value='*'>————选择主机————</option>"); //初始化主机列表数据，*表示所有主机
+                $.getJSON("{% url 'app:host_list' %}",{idc_id:idc_id,group_ids:group_ids.toString()},function(result){
+                    //返回值 result 在这里是一个列表
+                    for (var i = result.length - 1; i >= 0; i--) {
+{#                      // 把 result 的每一项作为选项显示在网页上#}
+                        $("<option value='"+result[i]+"'>"+result[i]+"</option>").appendTo("#hosts");
+                    }
+                });
+                return false; //不刷新页面
+            }
+
+            //模块列表+命令列表级联
+            $('#module').change(function () {
+                $('#cmd').html("<option value='*'>————选择命令————</option>"); //初始化数据
+                var module_id = $(this).val();                 //获取当前选择对象的value值
+                $.getJSON("{% url 'app:cmd_list' %}",{module_id:module_id},function(result){
+                    //返回值 result 在这里是一个列表
+                    for (var i = result.length - 1; i >= 0; i--) {
+{#                      // 把 result 的每一项作为选项显示在网页上#}
+                        $("<option value='"+result[i]+"'>"+result[i]+"</option>").appendTo("#cmd");
+                    }
+                });
+                return false; //不刷新页面
+            });
+
+
+            //点击执行按钮，传送命令给后台，返回数据在前台显示
+            $('#run').click(function(){
+                //传送参数，显示后台返回的数据
+                var idc = $('#idc').val();
+                var host_v = $('#hosts').val();
+                if (!host_v) {
+                    alert("请选择主机！")
+                }
+                else{
+                    var hosts = host_v.toString()
+                }   //多选择工具的值是个列表，需要转化成字符串);
+                var cmd = $('#cmd').val();
+                var args = $('#args').val();
+                $.getJSON("{% url 'app:cmd_run_done2' %}",{idc:idc,hosts:hosts,cmd:cmd,args:args},function(result){
+                        //JSON格式显示，调用app\static\js\formatJSON.js
+{#                    var option = formatJson(result, true);#}
+                        item = "<li>"+result+"</li>";
+                        //文本域控件不需要对字符进行转义，否则\r\n不会在页面上换行
+                        $('Job').append(item);
+                });
+
+            });
+
+        });
+
+    </script>
+{% endblock %}

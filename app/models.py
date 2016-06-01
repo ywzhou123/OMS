@@ -89,7 +89,8 @@ class Salt_Server(models.Model):
     idc = models.ForeignKey(IDC,verbose_name=u'所属机房')
     ip = models.GenericIPAddressField(verbose_name=u'服务器IP')
     port = models.IntegerField(verbose_name=u'端口号')
-    user = models.CharField(max_length=20,verbose_name=u'用户名')
+    url = models.URLField(blank=True,verbose_name=u'URL地址')
+    username = models.CharField(max_length=20, verbose_name=u'用户名')
     password = models.CharField(max_length=50,verbose_name=u'密码')
     def __unicode__(self):
         return self.ip

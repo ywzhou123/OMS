@@ -79,7 +79,7 @@
         </div>
 
         <div class="col-sm-8 col-md-9">
-{#            <label for="result" title="执行命令"></label>#}
+            <label for="result" title="执行命令"></label>
             <textarea id="result" readonly> [root@salt-server-? ~]# </textarea>
 
 {#            <div class="table-responsive" >#}
@@ -184,8 +184,11 @@
                 var command = '[root@salt-server-'+idc+' ~]# salt "'+hosts+'" "'+cmd+'"'+args_show;
                 $('#result').val(command);
                 $.getJSON("{% url 'app:cmd_run_done' %}",{idc:idc,hosts:hosts,cmd:cmd,args:args},function(result){
-                    //JSON格式显示，调用app\static\js\formatJSON.js
-                    var option = formatJson(result,true);
+                    if(typeof result=='object') {
+                        //JSON格式显示，调用app\static\js\formatJSON.js
+                        var option = formatJson(result, true);
+                    }
+                    else{option=result}
                     $('#result').val(command+option)
                 });
                 return false;
